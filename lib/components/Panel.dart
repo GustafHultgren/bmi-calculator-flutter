@@ -7,7 +7,9 @@ class Panel extends StatelessWidget {
   final Widget child;
   final bool selected;
   final Function onTap;
-  Panel({this.selected = false, this.child, this.onTap});
+  final int flex;
+
+  Panel({this.selected = false, this.child, this.onTap, this.flex = 1});
 
   Color get color {
     return selected ? activePanelColor : inactivePanelColor;
@@ -16,6 +18,7 @@ class Panel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
+      flex: flex,
       child: GestureDetector(
         onTap: onTap,
         child: Container(

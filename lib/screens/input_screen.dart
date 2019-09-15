@@ -1,13 +1,13 @@
-import 'package:bmi_calculator/components/Panel.dart';
+import 'package:bmi_calculator/calculator.dart';
+import 'package:bmi_calculator/components/bottom_button.dart';
+import 'package:bmi_calculator/components/panel.dart';
 import 'package:bmi_calculator/constants.dart';
+import 'package:bmi_calculator/main.dart';
 import 'package:bmi_calculator/screens/result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum Gender { MALE, FEMALE }
-
-const double bottomContainerHeight = 80;
-
 
 class InputScreen extends StatefulWidget {
   static String id = 'inputScreen';
@@ -20,10 +20,6 @@ class _InputScreenState extends State<InputScreen> {
   int _height = 180;
   int _weight = 60;
   int _age = 18;
-
-  // Color getGenderPanelColor(Gender gender) {
-  //   return gender == this._gender ? activePanelColor : inactivePanelColor;
-  // }
 
   void setGender(Gender gender) {
     setState(() {
@@ -132,24 +128,13 @@ class _InputScreenState extends State<InputScreen> {
               ),
             ],
           )),
-          GestureDetector(
+          BottomButton(
+            label: 'CALCULATE',
             onTap: () {
+              Calculator calc = Calculator(height: _height, weight: _weight);
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ResultScreen()));
+                  MaterialPageRoute(builder: (context) => ResultScreen(bmiData: calc)));
             },
-            child: Container(
-              child: Center(
-                child: Text('CALCULATE', style: kLargeButtonTextStyle),
-              ),
-              padding: EdgeInsets.only(bottom: 20),
-              margin: EdgeInsets.only(top: 10),
-              decoration: BoxDecoration(
-                  color: Colors.redAccent[400],
-                  borderRadius:
-                      BorderRadius.vertical(bottom: Radius.circular(15))),
-              width: double.infinity,
-              height: bottomContainerHeight,
-            ),
           )
         ],
       ),
