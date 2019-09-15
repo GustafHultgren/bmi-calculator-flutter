@@ -1,16 +1,16 @@
+import 'package:bmi_calculator/components/Panel.dart';
+import 'package:bmi_calculator/constants.dart';
+import 'package:bmi_calculator/screens/result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum Gender { MALE, FEMALE }
 
 const double bottomContainerHeight = 80;
-const activePanelColor = Color(0xFF1D1E33);
-const inactivePanelColor = Color(0xFF111328);
-const TextStyle kLabelTextStyle = TextStyle(fontSize: 18, color: Colors.grey);
-const TextStyle kNumberTextStyle =
-    TextStyle(fontSize: 50, fontWeight: FontWeight.w900);
+
 
 class InputScreen extends StatefulWidget {
+  static String id = 'inputScreen';
   @override
   _InputScreenState createState() => _InputScreenState();
 }
@@ -19,10 +19,11 @@ class _InputScreenState extends State<InputScreen> {
   Gender _gender;
   int _height = 180;
   int _weight = 60;
+  int _age = 18;
 
-  Color getGenderPanelColor(Gender gender) {
-    return gender == this._gender ? activePanelColor : inactivePanelColor;
-  }
+  // Color getGenderPanelColor(Gender gender) {
+  //   return gender == this._gender ? activePanelColor : inactivePanelColor;
+  // }
 
   void setGender(Gender gender) {
     setState(() {
@@ -39,6 +40,12 @@ class _InputScreenState extends State<InputScreen> {
   set height(int height) {
     setState(() {
       _height = height >= 0 ? height : 0;
+    });
+  }
+
+  set age(int age) {
+    setState(() {
+      _age = age >= 0 ? age : 0;
     });
   }
 
@@ -113,43 +120,77 @@ class _InputScreenState extends State<InputScreen> {
           Expanded(
               child: Row(
             children: <Widget>[
-              Panel(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'WEIGHT',
-                      style: kLabelTextStyle,
-                    ),
-                    Text(
-                      _weight.toString(),
-                      style: kNumberTextStyle,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        RoundIconButton(
-                          icon: FontAwesomeIcons.plus,
-                          onPressed: () => this.weight = _weight + 1,
-                        ),
-                        SizedBox(width: 10),
-                        RoundIconButton(icon: FontAwesomeIcons.minus),
-                      ],
-                    )
-                  ],
-                ),
+              MetricPanel(
+                label: 'Weight',
+                metric: _weight,
+                incBy: (val) => this.weight = _weight + val,
               ),
-              Panel(),
+              MetricPanel(
+                label: 'age',
+                metric: _age,
+                incBy: (val) => this.age = _age + val,
+              ),
             ],
           )),
-          Container(
-            margin: EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-                color: Colors.redAccent[400],
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(15))),
-            width: double.infinity,
-            height: bottomContainerHeight,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ResultScreen()));
+            },
+            child: Container(
+              child: Center(
+                child: Text('CALCULATE', style: kLargeButtonTextStyle),
+              ),
+              padding: EdgeInsets.only(bottom: 20),
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                  color: Colors.redAccent[400],
+                  borderRadius:
+                      BorderRadius.vertical(bottom: Radius.circular(15))),
+              width: double.infinity,
+              height: bottomContainerHeight,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class MetricPanel extends StatelessWidget {
+  final String label;
+  final int metric;
+  final Function incBy;
+
+  MetricPanel({this.label, this.metric, this.incBy});
+
+  @override
+  Widget build(BuildContext context) {
+    return Panel(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            label,
+            style: kLabelTextStyle,
+          ),
+          Text(
+            metric.toString(),
+            style: kNumberTextStyle,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RoundIconButton(
+                icon: FontAwesomeIcons.plus,
+                onPressed: () => incBy(1),
+              ),
+              SizedBox(width: 10),
+              RoundIconButton(
+                icon: FontAwesomeIcons.minus,
+                onPressed: () => incBy(-1),
+              ),
+            ],
           )
         ],
       ),
@@ -200,32 +241,6 @@ class IconContent extends StatelessWidget {
         ),
         Text(text, style: kLabelTextStyle),
       ],
-    );
-  }
-}
-
-class Panel extends StatelessWidget {
-  final Widget child;
-  final bool selected;
-  final Function onTap;
-  Panel({this.selected = false, this.child, this.onTap});
-
-  Color get color {
-    return selected ? activePanelColor : inactivePanelColor;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          child: child,
-          margin: EdgeInsets.all(15),
-          decoration: BoxDecoration(
-              color: color, borderRadius: BorderRadius.circular(10)),
-        ),
-      ),
     );
   }
 }
